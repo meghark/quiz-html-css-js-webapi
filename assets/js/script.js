@@ -45,6 +45,49 @@ var getBodyEl = document.querySelector("body");
 
 
 var printQuestions = function(){
+    var oldMainEl = document.querySelector(".content");
+    //console.log(getBodyEl);
+    //console.log(oldMainEl);
+  
+    chosenQuestion = quizArray.pop();
+    //console.log(chosenQuestion);
+  
+    //Create the new main section for the page.
+    var newMainEl = document.createElement("main");
+    newMainEl.className="content";
+  
+    //Added header for the main section. A div with h3 element.
+    var divHeaderEl = document.createElement("div");
+    var questionEl = document.createElement("h3");
+    questionEl.className="row-header";
+    questionEl.textContent = chosenQuestion.question;
+  
+    //Add div and list containing the possible answers for the question
+    var divListEl = document.createElement("div");
+    var listEl = document.createElement("ul");
+    listEl.className ="options";
+  
+    var options = chosenQuestion.options;
+    //debugger;
+    for (var i=0; i< options.length; i++)
+    {
+      var listItemEl = document.createElement("li");
+      var buttonEl = document.createElement("button");
+      buttonEl.type ="button";
+      buttonEl.className = "user-choice";
+      buttonEl.className +=" btn";
+      buttonEl.textContent =options[i].id+". "+options[i].option;
+      buttonEl.setAttribute("button-id",options[i].id );
+      listItemEl.appendChild(buttonEl);
+      listEl.appendChild(listItemEl);
+    }  
+      //Being reset to current question not the previous one  
+      divListEl.appendChild(listEl);
+      divHeaderEl.appendChild(questionEl);
+  
+      newMainEl.appendChild(divHeaderEl);
+      newMainEl.appendChild(divListEl) 
+      getBodyEl.replaceChild(newMainEl, oldMainEl); 
 }
 
 var printResults = function(result) {    
@@ -57,6 +100,16 @@ var printHighScores = function(){
 }
 
 var updatePageHandler = function(event){
+
+    event.preventDefault();
+    var buttonClicked = event.target;
+    
+    if (buttonClicked.matches("#start-btn"))
+    {
+      console.log("start button clicked");
+      printQuestions();    
+      startTimer();
+    }  
 }
 
 
