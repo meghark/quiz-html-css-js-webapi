@@ -14,20 +14,70 @@
         <h3 class="timer">Time:<span class="timerValue"> 0</span></h3>
     </header>
     <main class="content change-main">
-        <div class="intro">
-            <h3>Coding Quiz Challenge</h3>
-        </div>
+        <section id="start-page">
+            <div class="intro">
+                <h3>Coding Quiz Challenge</h3>
+            </div>
+    
+            <div class="intro">
+                <p>Try to answer the following code-related questions within the time limit.<br/>
+                    Keep in mind that incorrect answers will penalize your score/time<br/>
+                    by 15 seconds!.        
+                </p>
+            </div>
+            <!-- This is a form instead of div, so that user can start the quiz by button click or pressing keyboard enter.-->
+            <div class="intro" >
+                <button id="start-btn" type="button" class="btn">Start Quiz</button>
+            </div>
+        </section>
 
-        <div class="intro">
-            <p>Try to answer the following code-related questions within the time limit.<br/>
-                Keep in mind that incorrect answers will penalize your score/time<br/>
-                by 15 seconds!.        
-            </p>
-        </div>
-        <!-- This is a form instead of div, so that user can start the quiz by button click or pressing keyboard enter.-->
-        <div class="intro" >
-            <button id="start-btn" type="button" class="btn">Start Quiz</button>
-        </div>        
+        <section id="question-page" hidden>
+            <div>
+                <h3 class="row-header" id="question"></h3>
+            </div>
+            
+            <div>
+                <ul class="options">                   
+                </ul>     
+            </div>  
+            
+            <div>
+                <h3 class="row-header result"></h3>
+            </div> 
+        </section>
+
+        <section id="quizComplete-page" hidden>
+            <div>
+                <h3>All done!</h3>
+            </div>
+            
+            <div>
+                <h4>Your final score is <span id="finalScore"></span></h4>
+            </div>
+            
+            <form>
+                <label for="testUser">Enter initials:</label>
+                <input name="testUser" id="testUser"/>
+                <button type="submit">Submit</button>
+            </form> 
+    
+            <div>
+                <h3 class="result"></h3>
+            </div>
+        </section>
+
+        <section id="scores-page" hidden>
+            <div class="highscore">
+                <ul id="score-list">                        
+                </ul>
+             </div>
+                
+             <div class="highscore">
+                 <button class="btn">Go Back</button>   
+                 <button class="btn">Clear high scores</button> 
+             </div>
+        </section>
+                
     </main>
     <script src="./assets/js/script.js"></script>
 </body>
