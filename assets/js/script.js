@@ -39,7 +39,10 @@ const jsonData = {
        ] 
  };
 
- //use body of the html for event propogation since the content of the page will change based on
+//To do: form.reset();
+//Error message if username is empty
+
+//use body of the html for event propogation since the content of the page will change based on
 //button clicks.
 var getBodyEl = document.querySelector("body");
 var expectedAnswer;
@@ -184,6 +187,54 @@ var printFinalScore = function(){
 }
 
 var printHighScores = function(){
+    var oldHeaderEl = document.querySelector("header");
+    var newHeaderEl = document.createElement("header");
+    var divEl = document.createElement("div");
+    divEl.className="highscore";
+    var h2El = document.createElement("h2");
+    h2El.textContent ="High Scores";
+    divEl.appendChild(h2El);
+    newHeaderEl.appendChild(divEl);
+
+    getBodyEl.replaceChild(newHeaderEl, oldHeaderEl);
+
+    var scoreArray = JSON.parse(localStorage.getItem("scores"));
+
+    //To DO : fix bug with highscores screen when link is pressed.
+    if(scoreArray)
+    {
+        var oldMainEl = document.querySelector("main");
+        var newMainEl = document.createElement("main");
+        var divScoreEl = document.createElement("div");
+        divScoreEl.className = "highscore";
+        var ulListEl = document.createElement("ul");  
+        for (var i=0; i<scoreArray.length; i++)
+        {
+        var listEl = document.createElement("li");
+        listEl.textContent=scoreArray[i].user +" - "+  scoreArray[i].score;
+        ulListEl.appendChild(listEl);
+        }
+        divScoreEl.appendChild(ulListEl);
+        newMainEl.appendChild(divScoreEl);
+    }
+
+    var divNextEl = document.createElement("div");
+    divNextEl.className = "highscore";
+    var buttonBackEl = document.createElement("button");
+    buttonBackEl.textContent  ="Go Back";
+    buttonBackEl.id = "backButton";
+    buttonBackEl.type ="submit";
+    buttonBackEl.className="btn";
+    var buttonClearEl = document.createElement("button");
+    buttonClearEl.textContent = "Clear high scores";
+    buttonClearEl.id = "clearButton";
+    buttonClearEl.type ="submit";
+    buttonClearEl.className="btn";
+    divNextEl.appendChild(buttonBackEl);
+    divNextEl.appendChild(buttonClearEl);  
+    newMainEl.appendChild(divNextEl);
+
+    getBodyEl.replaceChild(newMainEl, oldMainEl);
 }
 
 var updatePageHandler = function(event){
@@ -232,6 +283,45 @@ var updatePageHandler = function(event){
         printFinalScore(); 
         } 
         printResults(result);    
+    }
+    else if(buttonClicked.matches("#submit-score-btn"))
+    {    
+        var userId = document.querySelector("input[name='test-user']").value;
+        var score =timer; 
+        scoreCount++;
+        var scoreObj = {
+        user : userId,
+        score : score
+        }; 
+
+        console.log(scoreObj);
+        var scoreArray = JSON.parse(localStorage.getItem("scores"));
+        console.log("scoreAray ", scoreArray);
+
+        if(!scoreArray)
+        {
+        scoreArray = [];
+        }   
+        console.log("scoreAray ", scoreArray);
+        scoreArray.push(scoreObj);
+        console.log("scoreAray ", scoreArray);
+        //debugger;
+        localStorage.setItem("scores", JSON.stringify(scoreArray));
+        printHighScores();
+    } 
+    else if(buttonClicked.matches("#clearButton"))
+    {    
+        localStorage.clear();
+        var ulEl = document.querySelector("ul");
+        ulEl.remove();   
+    } 
+    else if(buttonClicked.matches("#backButton"))
+    {    
+        location.reload();
+    } 
+    else if(buttonClicked.matches("#viewScores"))
+    {
+        printHighScores();
     }
 }
 
