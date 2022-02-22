@@ -287,27 +287,34 @@ var updatePageHandler = function(event){
     else if(buttonClicked.matches("#submit-score-btn"))
     {    
         var userId = document.querySelector("input[name='test-user']").value;
-        var score =timer; 
-        scoreCount++;
-        var scoreObj = {
-        user : userId,
-        score : score
-        }; 
 
-        console.log(scoreObj);
-        var scoreArray = JSON.parse(localStorage.getItem("scores"));
-        console.log("scoreAray ", scoreArray);
-
-        if(!scoreArray)
+        if(userId)
         {
-        scoreArray = [];
-        }   
-        console.log("scoreAray ", scoreArray);
-        scoreArray.push(scoreObj);
-        console.log("scoreAray ", scoreArray);
-        //debugger;
-        localStorage.setItem("scores", JSON.stringify(scoreArray));
-        printHighScores();
+            var score =timer; 
+            scoreCount++;
+            var scoreObj = {
+            user : userId,
+            score : score
+            }; 
+
+            console.log(scoreObj);
+            var scoreArray = JSON.parse(localStorage.getItem("scores"));
+            console.log("scoreAray ", scoreArray);
+
+            if(!scoreArray)
+            {
+            scoreArray = [];
+            }   
+            console.log("scoreAray ", scoreArray);
+            scoreArray.push(scoreObj);
+            console.log("scoreAray ", scoreArray);
+            //debugger;
+            localStorage.setItem("scores", JSON.stringify(scoreArray));
+            printHighScores();
+        }
+        else{
+            alert("Please enter intials to save score!");
+        }        
     } 
     else if(buttonClicked.matches("#clearButton"))
     {    
