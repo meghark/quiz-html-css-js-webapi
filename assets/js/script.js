@@ -39,4 +39,26 @@ const jsonData = {
        ] 
  };
 
- 
+ //use body of the html for event propogation since the content of the page will change based on
+//button clicks.
+var getBodyEl = document.querySelector("body");
+
+
+var printQuestions = function(){
+}
+
+var printResults = function(result) {    
+}
+
+var printFinalScore = function(){
+}
+
+var printHighScores = function(){
+}
+
+var updatePageHandler = function(event){
+}
+
+
+getBodyEl.addEventListener("click", updatePageHandler);
+getBodyEl.addEventListener("submit", updatePageHandler);
