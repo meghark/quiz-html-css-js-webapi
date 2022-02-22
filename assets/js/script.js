@@ -42,16 +42,12 @@ const jsonData = {
  //use body of the html for event propogation since the content of the page will change based on
 //button clicks.
 var getBodyEl = document.querySelector("body");
-
+var quizArray = jsonData.quiz;
 
 var printQuestions = function(){
     var oldMainEl = document.querySelector(".content");
-    //console.log(getBodyEl);
-    //console.log(oldMainEl);
-  
     chosenQuestion = quizArray.pop();
-    //console.log(chosenQuestion);
-  
+ 
     //Create the new main section for the page.
     var newMainEl = document.createElement("main");
     newMainEl.className="content";
