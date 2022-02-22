@@ -53,26 +53,31 @@ var timer =60;
 var scores =[];
 var scoreCount=0;
 var chosenQuestion;
+var startPageEl = document.querySelector("#start-page");     
+var questionPageEl = document.querySelector("#question-page");  
+var quizCompletePageEl = document.querySelector("#quizComplete-page");   
+var scoresPageEl = document.querySelector("#scores-page");   
+
+var pages ={startPageEl: true, 
+             };
 
 var printQuestions = function(){
-    var oldMainEl = document.querySelector(".content");
-    chosenQuestion = quizArray.pop();
- 
-    //Create the new main section for the page.
-    var newMainEl = document.createElement("main");
-    newMainEl.className="content";
-  
-    //Added header for the main section. A div with h3 element.
-    var divHeaderEl = document.createElement("div");
-    var questionEl = document.createElement("h3");
-    questionEl.className="row-header";
-    questionEl.textContent = chosenQuestion.question;
-  
+    chosenQuestion = quizArray.pop(); 
+    var questionEl = document.querySelector("#question");
+    questionEl.textContent = chosenQuestion.question;  
     //Add div and list containing the possible answers for the question
-    var divListEl = document.createElement("div");
+    var listContainerEl = document.querySelector("#answer");  
+    var cleanUpPageEl = document.querySelector(".options"); 
+    if(cleanUpPageEl)
+    {
+        cleanUpPageEl.remove();
+    }
+    
     var listEl = document.createElement("ul");
     listEl.className ="options";
   
+    var options = chosenQuestion.options; 
+    
     var options = chosenQuestion.options;
     //debugger;
     for (var i=0; i< options.length; i++)
@@ -86,14 +91,8 @@ var printQuestions = function(){
       buttonEl.setAttribute("button-id",options[i].id );
       listItemEl.appendChild(buttonEl);
       listEl.appendChild(listItemEl);
-    }  
-      //Being reset to current question not the previous one  
-      divListEl.appendChild(listEl);
-      divHeaderEl.appendChild(questionEl);
-  
-      newMainEl.appendChild(divHeaderEl);
-      newMainEl.appendChild(divListEl) 
-      getBodyEl.replaceChild(newMainEl, oldMainEl); 
+    }     
+    listContainerEl.appendChild(listEl);
 }
 
 var printResults = function(result) {    
@@ -243,82 +242,37 @@ var updatePageHandler = function(event){
     var buttonClicked = event.target;
     
     if (buttonClicked.matches("#start-btn"))
-    {
-      var hiddenSection = document.querySelector("#question-page");
-      console.log(hiddenSection);
-      hiddenSection.hidden= false;
-      console.log(hiddenSection);
-      console.log("start button clicked");
-      printQuestions();    
-      startTimer();
+    {      
+      startPageEl.hidden= true;        
+      questionPageEl.hidden= false;
+      quizCompletePageEl.hidden = true;
+      scoresPageEl.hidden = true;   
+      
+      printQuestions();
     }  
     else if(buttonClicked.matches(".user-choice"))
-    {
-        actualAnswer = event.target.getAttribute("button-id");
-        expectedAnswer = chosenQuestion.answer;  
+    {      
+      if(quizArray.length === 0)
+      {
+        startPageEl.hidden= true;        
+        questionPageEl.hidden= true;
+        quizCompletePageEl.hidden = false;
+        scoresPageEl.hidden = true;  
 
-        console.log(expectedAnswer);
-        console.log(actualAnswer);   
-        var result = "Wrong!";
-        if(expectedAnswer === actualAnswer)
-        {
-        result = "Correct!";
-        }
-        else{
-            timer -=15;
-            
-            if(timer < 0)
-            {
-            timer =0;
-            setTimerValue();
-            }
-        }
-        console.log(result);
-
-        if(quizArray.length >0)
-        {
-        console.log("Answered the question");
+        showFinalScorePage();
+      }
+      else{
         printQuestions();
-        }
-        else
-        {
-        clearInterval(timerRunner);
-        console.log("show score"); 
-        printFinalScore(); 
-        } 
-        printResults(result);    
+      }      
     }
     else if(buttonClicked.matches("#submit-score-btn"))
-    {    
-        var userId = document.querySelector("input[name='test-user']").value;
+    {   
+        startPageEl.hidden= true;        
+        questionPageEl.hidden= true;
+        quizCompletePageEl.hidden = true;
+        scoresPageEl.hidden = false; 
 
-        if(userId)
-        {
-            var score =timer; 
-            scoreCount++;
-            var scoreObj = {
-            user : userId,
-            score : score
-            }; 
-
-            console.log(scoreObj);
-            var scoreArray = JSON.parse(localStorage.getItem("scores"));
-            console.log("scoreAray ", scoreArray);
-
-            if(!scoreArray)
-            {
-            scoreArray = [];
-            }   
-            console.log("scoreAray ", scoreArray);
-            scoreArray.push(scoreObj);
-            console.log("scoreAray ", scoreArray);
-            //debugger;
-            localStorage.setItem("scores", JSON.stringify(scoreArray));
-            printHighScores();
-        }
-        else{
-            alert("Please enter intials to save score!");
-        }        
+        showUserScores();
     } 
     else if(buttonClicked.matches("#clearButton"))
     {    
@@ -332,7 +286,7 @@ var updatePageHandler = function(event){
     } 
     else if(buttonClicked.matches("#viewScores"))
     {
-        printHighScores();
+        //printHighScores();
     }
 }
 
