@@ -42,7 +42,14 @@ const jsonData = {
  //use body of the html for event propogation since the content of the page will change based on
 //button clicks.
 var getBodyEl = document.querySelector("body");
+var expectedAnswer;
+var actualAnswer;
 var quizArray = jsonData.quiz;
+var timerRunner;
+var timer =60;
+var scores =[];
+var scoreCount=0;
+var chosenQuestion;
 
 var printQuestions = function(){
     var oldMainEl = document.querySelector(".content");
@@ -87,9 +94,93 @@ var printQuestions = function(){
 }
 
 var printResults = function(result) {    
+    var mainWithResultEl = document.querySelector(".content");
+    console.log(mainWithResultEl);
+
+    var checkForResultEl = document.querySelector(".result");
+
+    if(!checkForResultEl)
+    {
+      var divResultEl = document.createElement("div");
+      var resultEl = document.createElement("h3");
+      resultEl.className = "row-header";
+      resultEl.className += " result";
+      resultEl.textContent = result;
+      console.log(resultEl);
+  
+      divResultEl.appendChild(resultEl);
+      mainWithResultEl.appendChild(divResultEl);   
+    }
+    else
+    {
+      checkForResultEl.textContent = result;
+    } 
 }
 
+var setTimerValue = function(){
+    var timerEl = document.querySelector(".timerValue");   
+    timerEl.textContent =timer;
+    }
+  
+  var startTimer = function(){
+    timerRunner = setInterval(function(){
+       
+      if(timer <=0 )
+      {      
+        clearInterval(timerRunner);
+        console.log("show score"); 
+        printFinalScore(); 
+      }
+      else{
+        timer -=1;
+        setTimerValue();     
+      }
+    },1000);
+  }
+  
+
 var printFinalScore = function(){
+    var finalScore = timer;
+    setTimerValue();
+    var oldMainEl = document.querySelector(".content");
+
+    var newFinalScoreMainEl = document.createElement("main");
+    newFinalScoreMainEl.className = "content";
+    newFinalScoreMainEl.className +=" score-content";
+
+    var divHeaderEl = document.createElement("div");
+    var h3HeaderEl = document.createElement("h3");
+    h3HeaderEl.textContent = "All done!";
+    divHeaderEl.appendChild(h3HeaderEl);
+
+    var divScoreEl = document.createElement("div");
+    var h4ScoreEl = document.createElement("h4");
+    h4ScoreEl.innerHTML = "Your final score is <span class='scoreSpan'>"+finalScore+"</span>";
+    divScoreEl.appendChild(h4ScoreEl);
+
+    var formEl = document.createElement("form");
+    formEl.className ="submitForm";
+    var labelEl = document.createElement("label");
+    labelEl.textContent = "Enter initials:";
+    labelEl.htmlFor = "test-user";
+    var inputEl = document.createElement("input");
+    inputEl.name = "test-user";
+    inputEl.id = "test-user";
+    inputEl.required = true;
+    var submitButtonEl = document.createElement("button");
+    submitButtonEl.className="btn";
+    submitButtonEl.type ="button";
+    submitButtonEl.id = "submit-score-btn";
+    submitButtonEl.textContent ="Submit"
+    formEl.appendChild(labelEl);
+    formEl.appendChild(inputEl);
+    formEl.appendChild(submitButtonEl);
+
+    newFinalScoreMainEl.appendChild(divHeaderEl);
+    newFinalScoreMainEl.appendChild(divScoreEl);
+    newFinalScoreMainEl.appendChild(formEl);
+
+    getBodyEl.replaceChild(newFinalScoreMainEl, oldMainEl);
 }
 
 var printHighScores = function(){
@@ -106,6 +197,42 @@ var updatePageHandler = function(event){
       printQuestions();    
       startTimer();
     }  
+    else if(buttonClicked.matches(".user-choice"))
+    {
+        actualAnswer = event.target.getAttribute("button-id");
+        expectedAnswer = chosenQuestion.answer;  
+
+        console.log(expectedAnswer);
+        console.log(actualAnswer);   
+        var result = "Wrong!";
+        if(expectedAnswer === actualAnswer)
+        {
+        result = "Correct!";
+        }
+        else{
+            timer -=15;
+            
+            if(timer < 0)
+            {
+            timer =0;
+            setTimerValue();
+            }
+        }
+        console.log(result);
+
+        if(quizArray.length >0)
+        {
+        console.log("Answered the question");
+        printQuestions();
+        }
+        else
+        {
+        clearInterval(timerRunner);
+        console.log("show score"); 
+        printFinalScore(); 
+        } 
+        printResults(result);    
+    }
 }
 
 
