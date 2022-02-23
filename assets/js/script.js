@@ -39,9 +39,6 @@ const jsonData = {
        ] 
  };
 
-//To do: form.reset();
-//Error message if username is empty
-
 //use body of the html for event propogation since the content of the page will change based on
 //button clicks.
 var getBodyEl = document.querySelector("body");
@@ -116,7 +113,6 @@ var startTimer = function(){
     },1000);
   }
   
-
 var printFinalScore = function(){
     var finalScore = timer;
     setTimerValue();
@@ -125,10 +121,10 @@ var printFinalScore = function(){
     document.querySelector(".lastpage").textContent = result;  
 }
 
-var printHighScores = function(){ 
+var printAllScores = function(){ 
     // Hide the header for this screen.
     var oldHeaderEl = document.querySelector("header");
-    oldHeaderEl.hidden = true;
+    oldHeaderEl.remove();
 
     var scoreArray = JSON.parse(localStorage.getItem("scores"));
     if(scoreArray)
@@ -141,6 +137,7 @@ var printHighScores = function(){
             ulListEl.appendChild(listEl);
         }      
     }
+    scoresPageEl.hidden = false;   
 }
 
 // Save the scores in local storage.
@@ -191,10 +188,8 @@ var calculateScores = function(event) {
    The function will hide/unhide pages as required. 
    It will also call other functions to display dynamic content on the page. */
 var updatePageHandler = function(event){
-
-    event.preventDefault();
     var buttonClicked = event.target; 
-    
+    event.preventDefault(); 
     // When user clicks the start button start showing the questions and answer choices.
     // Also start the timer run.
     if (buttonClicked.matches("#start-btn"))
@@ -228,17 +223,17 @@ var updatePageHandler = function(event){
     }
     // On quiz completion allow user to enter intials and save the score.
     else if(buttonClicked.matches("#submit-score-btn"))
-    {   
-        hideAllPages();
+    {                                
         var userId = document.querySelector("input[name='testUser']").value;
         if(userId)
         {
-            saveScores(userId, timer);
-            scoresPageEl.hidden = false;             
-            printHighScores();
+            hideAllPages();
+            saveScores(userId, timer);                      
+            printAllScores();
         }
         else{
             alert("Please enter intials to save score!");
+            return false;
         }  
     } 
     // When clear scores is pressed delete all scores from UI.
@@ -259,7 +254,7 @@ var updatePageHandler = function(event){
     {
         hideAllPages();
         scoresPageEl.hidden = false; 
-        printHighScores();
+        printAllScores();
     }
 }
 
