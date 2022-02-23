@@ -144,96 +144,27 @@ var setTimerValue = function(){
 var printFinalScore = function(){
     var finalScore = timer;
     setTimerValue();
-    var oldMainEl = document.querySelector(".content");
-
-    var newFinalScoreMainEl = document.createElement("main");
-    newFinalScoreMainEl.className = "content";
-    newFinalScoreMainEl.className +=" score-content";
-
-    var divHeaderEl = document.createElement("div");
-    var h3HeaderEl = document.createElement("h3");
-    h3HeaderEl.textContent = "All done!";
-    divHeaderEl.appendChild(h3HeaderEl);
-
-    var divScoreEl = document.createElement("div");
-    var h4ScoreEl = document.createElement("h4");
-    h4ScoreEl.innerHTML = "Your final score is <span class='scoreSpan'>"+finalScore+"</span>";
-    divScoreEl.appendChild(h4ScoreEl);
-
-    var formEl = document.createElement("form");
-    formEl.className ="submitForm";
-    var labelEl = document.createElement("label");
-    labelEl.textContent = "Enter initials:";
-    labelEl.htmlFor = "test-user";
-    var inputEl = document.createElement("input");
-    inputEl.name = "test-user";
-    inputEl.id = "test-user";
-    inputEl.required = true;
-    var submitButtonEl = document.createElement("button");
-    submitButtonEl.className="btn";
-    submitButtonEl.type ="button";
-    submitButtonEl.id = "submit-score-btn";
-    submitButtonEl.textContent ="Submit"
-    formEl.appendChild(labelEl);
-    formEl.appendChild(inputEl);
-    formEl.appendChild(submitButtonEl);
-
-    newFinalScoreMainEl.appendChild(divHeaderEl);
-    newFinalScoreMainEl.appendChild(divScoreEl);
-    newFinalScoreMainEl.appendChild(formEl);
-
-    getBodyEl.replaceChild(newFinalScoreMainEl, oldMainEl);
+    var scoreEl = document.querySelector("#finalScore");
+    scoreEl.textContent = finalScore;
 }
 
 var printHighScores = function(){
     var oldHeaderEl = document.querySelector("header");
-    var newHeaderEl = document.createElement("header");
-    var divEl = document.createElement("div");
-    divEl.className="highscore";
-    var h2El = document.createElement("h2");
-    h2El.textContent ="High Scores";
-    divEl.appendChild(h2El);
-    newHeaderEl.appendChild(divEl);
-
-    getBodyEl.replaceChild(newHeaderEl, oldHeaderEl);
+    oldHeaderEl.hidden = true;
 
     var scoreArray = JSON.parse(localStorage.getItem("scores"));
 
     //To DO : fix bug with highscores screen when link is pressed.
     if(scoreArray)
     {
-        var oldMainEl = document.querySelector("main");
-        var newMainEl = document.createElement("main");
-        var divScoreEl = document.createElement("div");
-        divScoreEl.className = "highscore";
-        var ulListEl = document.createElement("ul");  
+        var ulListEl = document.querySelector("#score-list");
         for (var i=0; i<scoreArray.length; i++)
         {
-        var listEl = document.createElement("li");
-        listEl.textContent=scoreArray[i].user +" - "+  scoreArray[i].score;
-        ulListEl.appendChild(listEl);
-        }
-        divScoreEl.appendChild(ulListEl);
-        newMainEl.appendChild(divScoreEl);
+            var listEl = document.createElement("li");
+            listEl.textContent=scoreArray[i].user +" - "+  scoreArray[i].score;
+            ulListEl.appendChild(listEl);
+        }      
     }
-
-    var divNextEl = document.createElement("div");
-    divNextEl.className = "highscore";
-    var buttonBackEl = document.createElement("button");
-    buttonBackEl.textContent  ="Go Back";
-    buttonBackEl.id = "backButton";
-    buttonBackEl.type ="submit";
-    buttonBackEl.className="btn";
-    var buttonClearEl = document.createElement("button");
-    buttonClearEl.textContent = "Clear high scores";
-    buttonClearEl.id = "clearButton";
-    buttonClearEl.type ="submit";
-    buttonClearEl.className="btn";
-    divNextEl.appendChild(buttonBackEl);
-    divNextEl.appendChild(buttonClearEl);  
-    newMainEl.appendChild(divNextEl);
-
-    getBodyEl.replaceChild(newMainEl, oldMainEl);
 }
 
 var updatePageHandler = function(event){
@@ -259,7 +190,7 @@ var updatePageHandler = function(event){
         quizCompletePageEl.hidden = false;
         scoresPageEl.hidden = true;  
 
-        showFinalScorePage();
+        printFinalScore();
       }
       else{
         printQuestions();
@@ -267,12 +198,40 @@ var updatePageHandler = function(event){
     }
     else if(buttonClicked.matches("#submit-score-btn"))
     {   
-        startPageEl.hidden= true;        
-        questionPageEl.hidden= true;
-        quizCompletePageEl.hidden = true;
-        scoresPageEl.hidden = false; 
+        var userId = document.querySelector("input[name='testUser']").value;
+        if(userId)
+        {
+            var score =timer; 
+            scoreCount++;
+            var scoreObj = {
+            user : userId,
+            score : score
+            }; 
 
-        showUserScores();
+            console.log(scoreObj);
+            var scoreArray = JSON.parse(localStorage.getItem("scores"));
+            console.log("scoreAray ", scoreArray);
+
+            if(!scoreArray)
+            {
+            scoreArray = [];
+            }   
+            console.log("scoreAray ", scoreArray);
+            scoreArray.push(scoreObj);
+            console.log("scoreAray ", scoreArray);
+            //debugger;
+            localStorage.setItem("scores", JSON.stringify(scoreArray));
+
+            startPageEl.hidden= true;        
+            questionPageEl.hidden= true;
+            quizCompletePageEl.hidden = true;
+            scoresPageEl.hidden = false; 
+
+            printHighScores();
+        }
+        else{
+            alert("Please enter intials to save score!");
+        }  
     } 
     else if(buttonClicked.matches("#clearButton"))
     {    
@@ -286,7 +245,7 @@ var updatePageHandler = function(event){
     } 
     else if(buttonClicked.matches("#viewScores"))
     {
-        //printHighScores();
+        printHighScores();
     }
 }
 

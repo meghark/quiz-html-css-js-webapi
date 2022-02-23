@@ -37,8 +37,11 @@
 
 .score-content{
     text-align: left;
-    width: 40%;
     margin: 30px auto 20px auto;
+}
+
+.score-content h3{
+    font-size: 20px;
 }
 
 .score-content h3, h4, form{
@@ -105,6 +108,7 @@ li{
 
 .highscore{
     padding-bottom: 10px;
+    text-align: left;
 }
 
 .highscore li{
