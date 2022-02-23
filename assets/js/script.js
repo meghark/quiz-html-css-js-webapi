@@ -59,6 +59,7 @@ var pages ={startPageEl: true,
              };
 
 var printQuestions = function(){
+    //Choose one question at a time. pop will remove the question from array.
     chosenQuestion = quizArray.pop(); 
     var questionEl = document.querySelector("#question");
     questionEl.textContent = chosenQuestion.question;  
@@ -71,12 +72,8 @@ var printQuestions = function(){
     }
     
     var listEl = document.createElement("ul");
-    listEl.className ="options";
-  
-    var options = chosenQuestion.options; 
-    
-    var options = chosenQuestion.options;
-    //debugger;
+    listEl.className ="options";  
+    var options = chosenQuestion.options;    
     for (var i=0; i< options.length; i++)
     {
       var listItemEl = document.createElement("li");
