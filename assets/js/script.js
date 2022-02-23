@@ -133,7 +133,7 @@ var printAllScores = function(){
         for (var i=0; i<scoreArray.length; i++)
         {
             var listEl = document.createElement("li");
-            listEl.textContent=scoreArray[i].user +" - "+  scoreArray[i].score;
+            listEl.textContent= (i+1)+". "+scoreArray[i].user +" - "+  scoreArray[i].score;
             ulListEl.appendChild(listEl);
         }      
     }
@@ -143,7 +143,7 @@ var printAllScores = function(){
 // Save the scores in local storage.
 var saveScores = function(userId, score)
 {
-    var scoreObj = {
+     var scoreObj = {
             user : userId,
             score : score
             }; 
@@ -151,7 +151,7 @@ var saveScores = function(userId, score)
             var scoreArray = JSON.parse(localStorage.getItem("scores"));           
             if(!scoreArray)
             {
-            scoreArray = [];
+                scoreArray = [];                
             }   
             scoreArray.push(scoreObj);           
             localStorage.setItem("scores", JSON.stringify(scoreArray));
