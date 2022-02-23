@@ -232,7 +232,7 @@ var updatePageHandler = function(event){
             printAllScores();
         }
         else{
-            alert("Please enter intials to save score!");
+            alert("Please enter initials to save score!");
             return false;
         }  
     } 
