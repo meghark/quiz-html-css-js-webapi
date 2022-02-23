@@ -240,9 +240,9 @@ var updatePageHandler = function(event){
     // clean up localStorage.
     else if(buttonClicked.matches("#clearButton"))
     {    
-        localStorage.clear();
-        var ulEl = document.querySelector("ul");
-        ulEl.remove();   
+        var ulEl = document.querySelector("#score-list");
+        ulEl.remove();  
+        ocalStorage.clear();         
     } 
     // Show the start page again. Which can be achieved here by reloading the application.
     else if(buttonClicked.matches("#backButton"))

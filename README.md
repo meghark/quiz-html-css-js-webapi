@@ -19,7 +19,7 @@ The website allows the user to take a quiz on javascript.
 https://meghark.github.io/quiz-html-css-js-webapi/
 
 ## Website screenshot
-![Mockup for finished website](./assets/images/startQuizPage.png?raw=true)
+![Mockup for finished website](./assets/images/startQuizPage.PNG?raw=true)
 
 ## Contribution
 Created by Megha Kulathattil.
