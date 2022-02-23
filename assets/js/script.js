@@ -51,12 +51,12 @@ var quizArray = jsonData.quiz;
 var timerRunner;
 var timer =60;
 var scores =[];
-var scoreCount=0;
 var chosenQuestion;
 var startPageEl = document.querySelector("#start-page");     
 var questionPageEl = document.querySelector("#question-page");  
 var quizCompletePageEl = document.querySelector("#quizComplete-page");   
 var scoresPageEl = document.querySelector("#scores-page");   
+var result;
 
 var pages ={startPageEl: true, 
              };
@@ -85,8 +85,7 @@ var printQuestions = function(){
       var listItemEl = document.createElement("li");
       var buttonEl = document.createElement("button");
       buttonEl.type ="button";
-      buttonEl.className = "user-choice";
-      buttonEl.className +=" btn";
+      buttonEl.className = "user-choice btn";     
       buttonEl.textContent =options[i].id+". "+options[i].option;
       buttonEl.setAttribute("button-id",options[i].id );
       listItemEl.appendChild(buttonEl);
@@ -95,42 +94,19 @@ var printQuestions = function(){
     listContainerEl.appendChild(listEl);
 }
 
-var printResults = function(result) {    
-    var mainWithResultEl = document.querySelector(".content");
-    console.log(mainWithResultEl);
-
-    var checkForResultEl = document.querySelector(".result");
-
-    if(!checkForResultEl)
-    {
-      var divResultEl = document.createElement("div");
-      var resultEl = document.createElement("h3");
-      resultEl.className = "row-header";
-      resultEl.className += " result";
-      resultEl.textContent = result;
-      console.log(resultEl);
-  
-      divResultEl.appendChild(resultEl);
-      mainWithResultEl.appendChild(divResultEl);   
-    }
-    else
-    {
-      checkForResultEl.textContent = result;
-    } 
-}
-
 var setTimerValue = function(){
     var timerEl = document.querySelector(".timerValue");   
     timerEl.textContent =timer;
     }
   
-  var startTimer = function(){
+var startTimer = function(){
     timerRunner = setInterval(function(){
        
       if(timer <=0 )
-      {      
-        clearInterval(timerRunner);
-        console.log("show score"); 
+      { 
+        // Set to 0 incase the timer value has dropped below 0.
+        timer = 0;     
+        clearInterval(timerRunner);   
         printFinalScore(); 
       }
       else{
@@ -146,15 +122,15 @@ var printFinalScore = function(){
     setTimerValue();
     var scoreEl = document.querySelector("#finalScore");
     scoreEl.textContent = finalScore;
+    document.querySelector(".lastpage").textContent = result;  
 }
 
-var printHighScores = function(){
+var printHighScores = function(){ 
+    // Hide the header for this screen.
     var oldHeaderEl = document.querySelector("header");
     oldHeaderEl.hidden = true;
 
     var scoreArray = JSON.parse(localStorage.getItem("scores"));
-
-    //To DO : fix bug with highscores screen when link is pressed.
     if(scoreArray)
     {
         var ulListEl = document.querySelector("#score-list");
@@ -167,88 +143,126 @@ var printHighScores = function(){
     }
 }
 
-var updatePageHandler = function(event){
-
-    event.preventDefault();
-    var buttonClicked = event.target;
-    
-    if (buttonClicked.matches("#start-btn"))
-    {      
-      startPageEl.hidden= true;        
-      questionPageEl.hidden= false;
-      quizCompletePageEl.hidden = true;
-      scoresPageEl.hidden = true;   
-      
-      printQuestions();
-    }  
-    else if(buttonClicked.matches(".user-choice"))
-    {      
-      if(quizArray.length === 0)
-      {
-        startPageEl.hidden= true;        
-        questionPageEl.hidden= true;
-        quizCompletePageEl.hidden = false;
-        scoresPageEl.hidden = true;  
-
-        printFinalScore();
-      }
-      else{
-        printQuestions();
-      }      
-    }
-    else if(buttonClicked.matches("#submit-score-btn"))
-    {   
-        var userId = document.querySelector("input[name='testUser']").value;
-        if(userId)
-        {
-            var score =timer; 
-            scoreCount++;
-            var scoreObj = {
+// Save the scores in local storage.
+var saveScores = function(userId, score)
+{
+    var scoreObj = {
             user : userId,
             score : score
             }; 
-
-            console.log(scoreObj);
-            var scoreArray = JSON.parse(localStorage.getItem("scores"));
-            console.log("scoreAray ", scoreArray);
-
+            
+            var scoreArray = JSON.parse(localStorage.getItem("scores"));           
             if(!scoreArray)
             {
             scoreArray = [];
             }   
-            console.log("scoreAray ", scoreArray);
-            scoreArray.push(scoreObj);
-            console.log("scoreAray ", scoreArray);
-            //debugger;
+            scoreArray.push(scoreObj);           
             localStorage.setItem("scores", JSON.stringify(scoreArray));
+}
 
-            startPageEl.hidden= true;        
-            questionPageEl.hidden= true;
-            quizCompletePageEl.hidden = true;
-            scoresPageEl.hidden = false; 
+// This function will hide all sections. It will be used as a reset before setting any section to visible.
+var hideAllPages = function(){
+    startPageEl.hidden= true;        
+    questionPageEl.hidden= true;
+    quizCompletePageEl.hidden = true;
+    scoresPageEl.hidden = true;   
+}
 
+var calculateScores = function(event) {
+    actualAnswer = event.target.getAttribute("button-id");
+    expectedAnswer = chosenQuestion.answer;   
+    result = "Wrong!";
+    if(expectedAnswer === actualAnswer)
+    {
+        result = "Correct!";
+    }
+    else
+    {
+        timer -=15;        
+        if(timer < 0)
+        {
+            timer =0;
+            setTimerValue();
+        }
+    }
+}
+
+/* The following is the main page handler that receives all button click events.
+   The function will hide/unhide pages as required. 
+   It will also call other functions to display dynamic content on the page. */
+var updatePageHandler = function(event){
+
+    event.preventDefault();
+    var buttonClicked = event.target; 
+    
+    // When user clicks the start button start showing the questions and answer choices.
+    // Also start the timer run.
+    if (buttonClicked.matches("#start-btn"))
+    {      
+      // Hide all pages to start with. 
+      // Conditionally unhide required sections in the following code.
+      hideAllPages();
+      questionPageEl.hidden= false;
+      startTimer();
+      printQuestions();      
+    }  
+    // When user chooses an answer show the next question or final score screen.
+    else if(buttonClicked.matches(".user-choice"))
+    { 
+      hideAllPages();
+      // When user chooses an answer calculate the result.
+      calculateScores(event);      
+      if(quizArray.length === 0)
+      {
+        //debugger;
+        clearInterval(timerRunner);
+        quizCompletePageEl.hidden = false;
+        printFinalScore();       
+      }
+      else
+      {
+        questionPageEl.hidden= false;
+        printQuestions();
+        document.querySelector(".result").textContent = result;
+      }
+    }
+    // On quiz completion allow user to enter intials and save the score.
+    else if(buttonClicked.matches("#submit-score-btn"))
+    {   
+        hideAllPages();
+        var userId = document.querySelector("input[name='testUser']").value;
+        if(userId)
+        {
+            saveScores(userId, timer);
+            scoresPageEl.hidden = false;             
             printHighScores();
         }
         else{
             alert("Please enter intials to save score!");
         }  
     } 
+    // When clear scores is pressed delete all scores from UI.
+    // clean up localStorage.
     else if(buttonClicked.matches("#clearButton"))
     {    
         localStorage.clear();
         var ulEl = document.querySelector("ul");
         ulEl.remove();   
     } 
+    // Show the start page again. Which can be achieved here by reloading the application.
     else if(buttonClicked.matches("#backButton"))
     {    
         location.reload();
     } 
+    // Show user all saved scores when view scores is pressed.
     else if(buttonClicked.matches("#viewScores"))
     {
+        hideAllPages();
+        scoresPageEl.hidden = false; 
         printHighScores();
     }
 }
 
-
+//Set listeners on the 
 getBodyEl.addEventListener("click", updatePageHandler);
 getBodyEl.addEventListener("submit", updatePageHandler);
